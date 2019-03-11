@@ -120,7 +120,7 @@ public class CassandraBindingService extends BindingServiceImpl {
         cassandraCustomImplementation.unbindRoleFromDatabase(cassandraDbService, usernamePasswordCredential.getUsername());
         cassandraCustomImplementation.closeConnection(cassandraDbService);
 
-        credentialStore.deleteCredentials(serviceInstance, usernamePasswordCredential.getUsername());
+        credentialStore.deleteCredentials(serviceInstance, binding.getId());
     }
 
     @Override
