@@ -32,7 +32,7 @@ public class CassandraCustomImplementation {
 
     public void createDatabase(CassandraDbService cassandraDbService, String database) {
         String createStatement = "CREATE KEYSPACE " + database + " WITH " +
-                "replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 }";
+                "replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };";
         cassandraDbService.executeStatement(createStatement);
     }
 
@@ -51,8 +51,7 @@ public class CassandraCustomImplementation {
     }
 
     public void deleteDatabase(CassandraDbService cassandraDbService, String database) {
-        String cqlStatement = "CREATE KEYSPACE " + database + " WITH " +
-                "replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 }";
+        String cqlStatement = "DROP KEYSPACE IF EXISTS " + database + ";";
 
         cassandraDbService.executeStatement(cqlStatement);
     }
