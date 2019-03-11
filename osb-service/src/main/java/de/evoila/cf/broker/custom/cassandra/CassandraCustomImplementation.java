@@ -34,6 +34,8 @@ public class CassandraCustomImplementation {
         String createStatement = "CREATE KEYSPACE " + database + " WITH " +
                 "replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };";
         cassandraDbService.executeStatement(createStatement);
+
+        this.createRoleAndPermissions(cassandraDbService, database);
     }
 
     private void createRoleAndPermissions(CassandraDbService cassandraDbService, String database) {
