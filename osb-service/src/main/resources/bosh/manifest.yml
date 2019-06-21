@@ -36,15 +36,32 @@ instance_groups:
       - name: node_exporter
         release: osb-bosh-monitoring
     properties:
+      cluster_name: osb-cassandra
+      cassandra_exporter:
+        username: ((exporter_credentials.username))
+        password: ((exporter_credentials.password))
+      backup_agent:
+        username: ((backup_credentials.username))
+        password: ((backup_credentials.password))
       cassandra:
         cluster_name: osb-cassandra
-        users:
-        - username: porcupine
-          password: sample123
+        admin_users:
+        - username: ((service_credentials.username))
+          password: ((service_credentials.password))
+          superuser: true
+        - username: ((exporter_credentials.username))
+          password: ((exporter_credentials.password))
           superuser: false
+        backup_users:
+        - username: ((backup_credentials.username))
+          password: ((backup_credentials.password))
+          superuser: true
+        users:
+        - username: ((default_credentials.username))
+          password: ((default_credentials.password))
         databases:
-        - name: animals
+        - name: cassandra_default
           class: SimpleStrategy
           durable_writes: true
           users:
-          - porcupine
+            - ((default_credentials.username))

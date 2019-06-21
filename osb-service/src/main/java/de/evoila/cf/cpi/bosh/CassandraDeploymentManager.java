@@ -9,6 +9,7 @@ import de.evoila.cf.broker.util.MapUtils;
 import de.evoila.cf.cpi.bosh.deployment.DeploymentManager;
 import de.evoila.cf.cpi.bosh.deployment.manifest.Manifest;
 import de.evoila.cf.security.credentials.CredentialStore;
+import de.evoila.cf.security.credentials.DefaultCredentialConstants;
 import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
@@ -40,27 +41,59 @@ public class CassandraDeploymentManager extends DeploymentManager {
         if (!isUpdate) {
             Map<String, Object> cassandraManifestProperties = manifestProperties(INSTANCE_GROUP, manifest);
 
+            HashMap<String, Object> cassandraExporter = (HashMap<String, Object>) cassandraManifestProperties.get("cassandra_exporter");
+            HashMap<String, Object> backupAgent = (HashMap<String, Object>) cassandraManifestProperties.get("backup_agent");
             HashMap<String, Object> cassandra = (HashMap<String, Object>) cassandraManifestProperties.get(INSTANCE_GROUP);
 
-            List<HashMap<String, Object>> users = (List<HashMap<String, Object>>) cassandra.get("users");
-            HashMap<String, Object> userProperties = users.get(0);
-            UsernamePasswordCredential usernamePasswordCredential = credentialStore.createUser(serviceInstance,
-                    CredentialConstants.ROOT_CREDENTIALS);
-            userProperties.put("username", usernamePasswordCredential.getUsername());
-            userProperties.put("password", usernamePasswordCredential.getPassword());
+            List<HashMap<String, Object>> adminUsers = (List<HashMap<String, Object>>) cassandra.get("admin_users");
+            HashMap<String, Object> userProperties = adminUsers.get(0);
+            UsernamePasswordCredential rootCredentials = credentialStore.createUser(serviceInstance,
+                    CredentialConstants.ROOT_CREDENTIALS, "service");
+            userProperties.put("username", rootCredentials.getUsername());
+            userProperties.put("password", rootCredentials.getPassword());
             userProperties.put("superuser", true);
+            serviceInstance.setUsername(rootCredentials.getUsername());
+
+            UsernamePasswordCredential exporterCredential = credentialStore.createUser(serviceInstance,
+                    DefaultCredentialConstants.EXPORTER_CREDENTIALS);
+            cassandraExporter.put("username", exporterCredential.getUsername());
+            cassandraExporter.put("password", exporterCredential.getPassword());
+            cassandraExporter.put("superuser", true);
+            HashMap<String, Object> exporterProperties = adminUsers.get(1);
+            exporterProperties.put("username", exporterCredential.getUsername());
+            exporterProperties.put("password", exporterCredential.getPassword());
+            exporterProperties.put("superuser", true);
+
+            UsernamePasswordCredential backupAgentUsernamePasswordCredential = credentialStore.createUser(serviceInstance,
+                    DefaultCredentialConstants.BACKUP_AGENT_CREDENTIALS);
+            backupAgent.put("username", backupAgentUsernamePasswordCredential.getUsername());
+            backupAgent.put("password", backupAgentUsernamePasswordCredential.getPassword());
+
+            List<HashMap<String, Object>> backupUsers = (List<HashMap<String, Object>>) cassandra.get("backup_users");
+            HashMap<String, Object> backupUserProperties = backupUsers.get(0);
+            UsernamePasswordCredential backupUsernamePasswordCredential = credentialStore.createUser(serviceInstance,
+                    DefaultCredentialConstants.BACKUP_CREDENTIALS);
+            backupUserProperties.put("username", backupUsernamePasswordCredential.getUsername());
+            backupUserProperties.put("password", backupUsernamePasswordCredential.getPassword());
+            backupUserProperties.put("superuser", true);
+
+            List<HashMap<String, Object>> users = (List<HashMap<String, Object>>) cassandra.get("users");
+            HashMap<String, Object> defaultUserProperties = users.get(0);
+            UsernamePasswordCredential defaultUsernamePasswordCredential = credentialStore.createUser(serviceInstance,
+                    CredentialConstants.USER_CREDENTIALS);
+            defaultUserProperties.put("username", defaultUsernamePasswordCredential.getUsername());
+            defaultUserProperties.put("password", defaultUsernamePasswordCredential.getPassword());
+
+            List<String> databaseUsers = new ArrayList<>();
+            databaseUsers.add(defaultUsernamePasswordCredential.getUsername());
 
             List<Map<String, Object>> databases = new ArrayList<>();
             Map<String, Object> database = new HashMap<>();
-            databases.add(database);
             database.put("name", CassandraUtils.dbName(serviceInstance.getId()));
             database.put("class", "SimpleStrategy");
             database.put("durable_writes", true);
-
-            List<String> user = new ArrayList<>();
-            user.add(usernamePasswordCredential.getUsername());
-            database.put("users", user);
-
+            database.put("users", databaseUsers);
+            databases.add(database);
             cassandra.put("databases", databases);
 
         } else if (isUpdate && customParameters != null && !customParameters.isEmpty()) {

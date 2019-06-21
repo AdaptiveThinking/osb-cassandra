@@ -1,6 +1,3 @@
-/**
- *
- */
 package de.evoila.cf.broker.custom.cassandra;
 
 import de.evoila.cf.broker.bean.ExistingEndpointBean;
