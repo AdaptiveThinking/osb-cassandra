@@ -20,6 +20,26 @@ stemcells:
     os: ubuntu-xenial
     version: latest
 
+variables:
+- name: cassandra_password
+  type: password
+- name: service_credentials
+  type: user
+  options:
+    username: service
+- name: exporter_credentials
+  type: user
+  options:
+    username: exporter
+- name: backup_credentials
+  type: user
+  options:
+    username: backup
+- name: user_credentials
+  type: user
+  options:
+    username: cassandra_user
+
 instance_groups:
   - name: cassandra
     instances: 3
@@ -57,11 +77,11 @@ instance_groups:
           password: ((backup_credentials.password))
           superuser: true
         users:
-        - username: ((default_credentials.username))
-          password: ((default_credentials.password))
+        - username: ((user_credentials.username))
+          password: ((user_credentials.password))
         databases:
         - name: cassandra_default
           class: SimpleStrategy
           durable_writes: true
           users:
-          - ((default_credentials.username))
+          - ((user_credentials.username))

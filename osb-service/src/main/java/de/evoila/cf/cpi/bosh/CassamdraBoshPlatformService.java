@@ -56,7 +56,7 @@ public class CassamdraBoshPlatformService extends BoshPlatformService {
 
     @Override
     public void postDeleteInstance(ServiceInstance serviceInstance) {
-        credentialStore.deleteCredentials(serviceInstance.getId(), CredentialConstants.ROOT_CREDENTIALS);
+        credentialStore.deleteCredentials(serviceInstance.getId(), CredentialConstants.SERVICE_CREDENTIALS);
     }
 
 }

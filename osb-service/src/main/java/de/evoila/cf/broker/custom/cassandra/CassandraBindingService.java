@@ -68,7 +68,7 @@ public class CassandraBindingService extends BindingServiceImpl {
 	protected Map<String, Object> createCredentials(String bindingId, ServiceInstanceBindingRequest serviceInstanceBindingRequest,
                                                     ServiceInstance serviceInstance, Plan plan, ServerAddress host) throws ServiceBrokerException {
         UsernamePasswordCredential serviceInstanceUsernamePasswordCredential = credentialStore
-                .getUser(serviceInstance, CredentialConstants.ROOT_CREDENTIALS);
+                .getUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS);
 
         String database = CassandraUtils.dbName(serviceInstance.getId());
         if (serviceInstanceBindingRequest.getParameters() != null) {
@@ -113,7 +113,7 @@ public class CassandraBindingService extends BindingServiceImpl {
     @Override
     protected void unbindService(ServiceInstanceBinding binding, ServiceInstance serviceInstance, Plan plan)  {
         UsernamePasswordCredential serviceInstanceUsernamePasswordCredential = credentialStore
-                .getUser(serviceInstance, CredentialConstants.ROOT_CREDENTIALS);
+                .getUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS);
 
         UsernamePasswordCredential usernamePasswordCredential = credentialStore.getUser(serviceInstance, binding.getId());
 

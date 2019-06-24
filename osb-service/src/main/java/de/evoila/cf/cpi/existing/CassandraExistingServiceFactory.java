@@ -47,7 +47,7 @@ public class CassandraExistingServiceFactory extends ExistingServiceFactory {
 
 	@Override
     public void deleteInstance(ServiceInstance serviceInstance, Plan plan) throws PlatformException {
-        credentialStore.deleteCredentials(serviceInstance, CredentialConstants.ROOT_CREDENTIALS);
+        credentialStore.deleteCredentials(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS);
 
         CassandraDbService cassandraDbService = cassandraCustomImplementation.connection(serviceInstance, plan, null);
         cassandraCustomImplementation.deleteDatabase(cassandraDbService, CassandraUtils.dbName(serviceInstance.getId()));
@@ -61,8 +61,8 @@ public class CassandraExistingServiceFactory extends ExistingServiceFactory {
 
     @Override
     public ServiceInstance createInstance(ServiceInstance serviceInstance, Plan plan, Map<String, Object> parameters) throws PlatformException {
-        credentialStore.createUser(serviceInstance, CredentialConstants.ROOT_CREDENTIALS);
-        UsernamePasswordCredential serviceInstanceUsernamePasswordCredential = credentialStore.getUser(serviceInstance, CredentialConstants.ROOT_CREDENTIALS);
+        credentialStore.createUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS);
+        UsernamePasswordCredential serviceInstanceUsernamePasswordCredential = credentialStore.getUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS);
 
         serviceInstance.setUsername(serviceInstanceUsernamePasswordCredential.getUsername());
 
