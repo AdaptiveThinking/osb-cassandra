@@ -4,6 +4,7 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.internal.core.auth.PlainTextAuthProvider;
 import de.evoila.cf.broker.model.catalog.ServerAddress;
 import org.slf4j.Logger;
@@ -64,12 +65,16 @@ public class CassandraDbService {
         return true;
     }
 
+    public boolean isConnected() {
+        return session != null && !session.isClosed();
+    }
+
     public void closeConnection() {
         session.close();
     }
 
-    public void executeStatement(String statement) {
-        session.execute(statement);
+    public ResultSet executeStatement(String statement) {
+        return session.execute(statement);
     }
 
     /**
