@@ -15,8 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 public class EmbeddedCassandraRoleTest extends EmbeddedCassandraTestBase {
 
-    public static final String TEST_USER_NAME = "test_user";
-    public static final String TEST_USER_PASSWORD= "test_password";
+
 
     @Before
     public void prepareKeyspace() {

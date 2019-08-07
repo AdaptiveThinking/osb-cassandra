@@ -27,6 +27,8 @@ public class EmbeddedCassandraTestBase {
     public static final String DEFAULT_KEYSPACE = "system";
 
     public static final String KEYSPACE_NAME = "test_keyspace";
+    public static final String TEST_USER_NAME = "test_user";
+    public static final String TEST_USER_PASSWORD= "test_password";
 
 
     private static int port;
