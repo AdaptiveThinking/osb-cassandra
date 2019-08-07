@@ -70,7 +70,8 @@ public class CassandraDbService {
     }
 
     public void closeConnection() {
-        session.close();
+        if (isConnected())
+            session.close();
     }
 
     public ResultSet executeStatement(String statement) {
