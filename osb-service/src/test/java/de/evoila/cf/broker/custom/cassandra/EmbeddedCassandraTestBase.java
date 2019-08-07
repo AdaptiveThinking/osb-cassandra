@@ -56,6 +56,7 @@ public class EmbeddedCassandraTestBase {
             if (!connected) {
                 try {
                     log.info("Waiting for EmbeddedCassandra to execute the Optional task to create the superuser... Normally takes between 7 and 10 seconds");
+                    cassandraDbService.closeConnection();
                     Thread.sleep(2500);
                 } catch (InterruptedException ex) {}
             }
