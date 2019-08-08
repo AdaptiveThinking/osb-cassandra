@@ -46,12 +46,14 @@ public class CassandraDbService {
     public boolean createConnection(String username, String password, String database, String datacenter, List<ServerAddress> serverAddresses) {
         try {
             String keyspace = database;
-            if (StringUtils.isEmpty(datacenter))
+            if (StringUtils.isEmpty(datacenter)) {
                 datacenter = DATACENTER_DEFAULT;
+            }
 
             CqlSessionBuilder sessionBuilder = CqlSession.builder();
-            for (ServerAddress sA : serverAddresses)
+            for (ServerAddress sA : serverAddresses) {
                 sessionBuilder.addContactPoint(new InetSocketAddress(sA.getIp(), sA.getPort()));
+            }
             session = sessionBuilder
                     .withKeyspace(keyspace)
                     .withLocalDatacenter(datacenter)
