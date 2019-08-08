@@ -31,6 +31,7 @@ public class EmbeddedCassandraTestBase {
     public static final String TEST_USER_PASSWORD= "test_password";
 
 
+    private static boolean wasAlreadyConnected = false;
     private static int port;
     private static String ip;
     private static String clusterName;
@@ -47,9 +48,16 @@ public class EmbeddedCassandraTestBase {
         List<ServerAddress> addresses = new LinkedList<>();
         addresses.add(new ServerAddress("embedded_cassandra",ip, port));
 
+        if (!wasAlreadyConnected) {
+            try {
+                log.info("Give EmbeddedCassandra some time to create the superuser, which is necessary to connect. This is done in an optional task and executed after startup of cassandra.");
+                Thread.sleep(10*1000);
+            } catch (InterruptedException ex) {}
+        }
+
         boolean connected = false;
         int tries = 0;
-        while (!connected || tries < AUTHENTICATION_RETRIES) {
+        while (!connected && tries < AUTHENTICATION_RETRIES) {
             connected = cassandraDbService.createConnection(username,
                     password,
                     database,
@@ -64,6 +72,7 @@ public class EmbeddedCassandraTestBase {
             }
             tries++;
         }
+        wasAlreadyConnected = connected;
     }
 
     @BeforeClass
