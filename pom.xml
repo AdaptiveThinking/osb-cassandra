@@ -111,6 +111,10 @@
                     <configuration>
                         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
                     </configuration>
+                    <!--    Define and downgrade the surefire plugin's version because junit jupiter
+                            is currently not compatible with it and will not run the tests
+                            on the test goal. -->
+                    <version>2.19.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
