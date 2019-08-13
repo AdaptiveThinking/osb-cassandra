@@ -53,6 +53,16 @@ public class CassandraCustomImplementation {
         String cqlStatement = "DROP KEYSPACE IF EXISTS " + database + ";";
 
         cassandraDbService.executeStatement(cqlStatement);
+
+        this.dropRoles(cassandraDbService, database);
+    }
+
+    public void dropRoles(CassandraDbService cassandraDbService, String database) {
+        String dropRoleAdminStatement = "DROP ROLE IF EXISTS \'" + database + "_admin\';";
+        cassandraDbService.executeStatement(dropRoleAdminStatement);
+
+        String dropRoleUserStatement = "DROP ROLE IF EXISTS \'" + database + "_user\';";
+        cassandraDbService.executeStatement(dropRoleUserStatement);
     }
 
     public void bindRoleToDatabase(CassandraDbService cassandraDbService, String username,
