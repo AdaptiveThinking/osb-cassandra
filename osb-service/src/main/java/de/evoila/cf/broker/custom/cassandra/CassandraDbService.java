@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -83,10 +84,12 @@ public class CassandraDbService {
     /**
      * Returns the CassandraConfigHolder singleton that is embedded in this class.
      * It is used to set username and password for authentication against cassandra.
-     * Following three options are set:
+     * Furthermore sets the timeout of requests to 60 seconds to prevent errors by default timeout.
+     * Following four options are set:
      * - DefaultDriverOption.AUTH_PROVIDER_CLASS
      * - DefaultDriverOption.AUTH_PROVIDER_USER_NAME
      * - DefaultDriverOption.AUTH_PROVIDER_PASSWORD
+     * - DefaultDriverOption.REQUEST_TIMEOUT
      * @param username to authenticate against cassandra
      * @param password to authenticate against cassandra
      * @return a DriverConfigLoader with the three above listed options.
@@ -97,6 +100,7 @@ public class CassandraDbService {
                     .withClass(DefaultDriverOption.AUTH_PROVIDER_CLASS, PlainTextAuthProvider.class)
                     .withString(DefaultDriverOption.AUTH_PROVIDER_USER_NAME, username)
                     .withString(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, password)
+                    .withDuration(DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofSeconds(60))
                     .build();
         }
         return cassandraConfigHolder;
