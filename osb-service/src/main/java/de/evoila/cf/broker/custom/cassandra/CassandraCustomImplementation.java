@@ -21,10 +21,10 @@ public class CassandraCustomImplementation {
 
     private Logger log = LoggerFactory.getLogger(CassandraCustomImplementation.class);
 
-    private ExistingEndpointBean existingEndpointBean;
+    private CassandraExistingEndpointBean cassandraExistingEndpointBean;
 
-    public CassandraCustomImplementation(ExistingEndpointBean existingEndpointBean) {
-        this.existingEndpointBean = existingEndpointBean;
+    public CassandraCustomImplementation(CassandraExistingEndpointBean cassandraExistingEndpointBean) {
+        this.cassandraExistingEndpointBean = cassandraExistingEndpointBean;
     }
 
     public void createDatabase(CassandraDbService cassandraDbService, String database) {
@@ -81,10 +81,10 @@ public class CassandraCustomImplementation {
                         plan.getMetadata().getIngressInstanceGroup());
 
             cassandraService.createConnection(usernamePasswordCredential.getUsername(), usernamePasswordCredential.getPassword(),
-                   CassandraUtils.dbName(serviceInstance.getId()), serverAddresses);
+                   CassandraUtils.dbName(serviceInstance.getId()), null, serverAddresses);
         } else if (plan.getPlatform() == Platform.EXISTING_SERVICE)
-            cassandraService.createConnection(existingEndpointBean.getUsername(), existingEndpointBean.getPassword(),
-                    existingEndpointBean.getDatabase(), existingEndpointBean.getHosts());
+            cassandraService.createConnection(cassandraExistingEndpointBean.getUsername(), cassandraExistingEndpointBean.getPassword(),
+                    cassandraExistingEndpointBean.getDatabase(), cassandraExistingEndpointBean.getDatacenter(), cassandraExistingEndpointBean.getHosts());
 
         return cassandraService;
     }

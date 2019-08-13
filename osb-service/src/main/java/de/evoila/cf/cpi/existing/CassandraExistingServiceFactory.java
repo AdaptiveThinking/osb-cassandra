@@ -7,6 +7,7 @@ package de.evoila.cf.cpi.existing;
 import de.evoila.cf.broker.bean.ExistingEndpointBean;
 import de.evoila.cf.broker.custom.cassandra.CassandraCustomImplementation;
 import de.evoila.cf.broker.custom.cassandra.CassandraDbService;
+import de.evoila.cf.broker.custom.cassandra.CassandraExistingEndpointBean;
 import de.evoila.cf.broker.custom.cassandra.CassandraUtils;
 import de.evoila.cf.broker.exception.PlatformException;
 import de.evoila.cf.broker.model.ServiceInstance;
@@ -28,7 +29,6 @@ import java.util.Map;
 @ConditionalOnBean(ExistingEndpointBean.class)
 public class CassandraExistingServiceFactory extends ExistingServiceFactory {
 
-    private ExistingEndpointBean existingEndpointBean;
 
     private CassandraCustomImplementation cassandraCustomImplementation;
 
@@ -37,11 +37,10 @@ public class CassandraExistingServiceFactory extends ExistingServiceFactory {
     public CassandraExistingServiceFactory(PlatformRepository platformRepository,
                                            CassandraCustomImplementation cassandraCustomImplementation,
                                            ServicePortAvailabilityVerifier portAvailabilityVerifier,
-                                           ExistingEndpointBean existingEndpointBean,
+                                           CassandraExistingEndpointBean cassandraExistingEndpointBean,
                                            CredentialStore credentialStore) {
-        super(platformRepository, portAvailabilityVerifier, existingEndpointBean);
+        super(platformRepository, portAvailabilityVerifier, cassandraExistingEndpointBean);
         this.cassandraCustomImplementation = cassandraCustomImplementation;
-        this.existingEndpointBean = existingEndpointBean;
         this.credentialStore = credentialStore;
     }
 
