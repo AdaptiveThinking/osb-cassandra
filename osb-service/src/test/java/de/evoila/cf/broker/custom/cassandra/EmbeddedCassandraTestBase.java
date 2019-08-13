@@ -16,6 +16,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * This class is the base for the other Unit tests.
+ * It starts the embedded cassandra instance before all tests cases.
+ * It provides a creation of a connection to cassandra before a test case
+ * and cleanup of created keyspaces and the session after a test case.
+ * Additionally reoccuring variables are stored as constants, such as {@linkplain #USERNAME}, {@linkplain #DATACENTER} and more.
+ */
 public class EmbeddedCassandraTestBase {
 
     private static final Logger log = LoggerFactory.getLogger(EmbeddedCassandraTestBase.class);

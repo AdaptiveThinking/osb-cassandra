@@ -16,12 +16,17 @@ import static org.junit.Assert.assertTrue;
 public class EmbeddedCassandraRoleTest extends EmbeddedCassandraTestBase {
 
 
-
+    /**
+     * Creates a keyspace to use in the {@linkplain #roleTest()}.
+     */
     @Before
     public void prepareKeyspace() {
         cassandraImplementation.createDatabase(cassandraDbService, KEYSPACE_NAME);
     }
 
+    /**
+     * Binds a role to a keyspace via the {@linkplain CassandraCustomImplementation} and checks whether the expected entries are made in cassandra.
+     */
     @Test
     public void roleTest() {
         cassandraImplementation.bindRoleToDatabase(cassandraDbService, TEST_USER_NAME, TEST_USER_PASSWORD, KEYSPACE_NAME);

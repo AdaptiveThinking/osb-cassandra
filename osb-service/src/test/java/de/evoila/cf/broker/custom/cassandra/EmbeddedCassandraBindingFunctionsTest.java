@@ -15,6 +15,9 @@ public class EmbeddedCassandraBindingFunctionsTest extends EmbeddedCassandraTest
     private static final String SELECT_TEST_KEYSPACE = "SELECT * from system_schema.tables WHERE keyspace_name = \'"+KEYSPACE_NAME+"\';";
     private static final String SELECT_FROM_TABLE_QUERY= "SELECT * from "+KEYSPACE_NAME+"."+TEST_TABLE+";";
 
+    /**
+     * Mirrors a binding and switches to the user created in the binding.
+     */
     @Before
     public void prepareUserAndConnection() {
         cassandraImplementation.createDatabase(cassandraDbService, KEYSPACE_NAME);
@@ -23,8 +26,22 @@ public class EmbeddedCassandraBindingFunctionsTest extends EmbeddedCassandraTest
         prepareConnection(KEYSPACE_NAME, TEST_USER_NAME, TEST_USER_PASSWORD);
     }
 
+    /**
+     * This tests runs commands on a binding to verify the integrity of a binding.
+     * Therefore following steps are done as the binding user:
+     *  <ul>
+     *      <li>Create a table</li>
+     *      <li>Insert data</li>
+     *      <li>Delete data</li>
+     *      <li>Trunk table</li>
+     *      <li>Drop table</li>
+     *  </ul>
+     *
+     * For preparations see {@linkplain #prepareUserAndConnection()}.
+     */
     @Test
     public void basicBindingFunctionsTest() {
+        // Test table non-existence
         ResultSet resultSet = cassandraDbService.executeStatement(SELECT_TEST_KEYSPACE);
         assertFalse("Test table should not exist yet.", resultSet.iterator().hasNext());
 

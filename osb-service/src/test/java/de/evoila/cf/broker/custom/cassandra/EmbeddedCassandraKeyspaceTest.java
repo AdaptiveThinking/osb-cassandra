@@ -19,6 +19,11 @@ public class EmbeddedCassandraKeyspaceTest extends EmbeddedCassandraTestBase {
     public static final String[] USER_PERMISSIONS = new String[] {"ALTER", "AUTHORIZE", "CREATE", "DROP", "MODIFY", "SELECT"};
 
 
+    /**
+     * Tests the lifecycle of a keyspace when using the {@linkplain CassandraCustomImplementation}.
+     * Therefore a keyspace is created (provisioning) and deleted (deprovisioning).
+     * The existence and non-existence of derived roles are tested after each step.
+     */
     @Test
     public void keyspaceTest() {
         // Test keyspace creation
@@ -60,20 +65,40 @@ public class EmbeddedCassandraKeyspaceTest extends EmbeddedCassandraTestBase {
         checkAbsencePermissionsOfUser(keyspaceUser);
     }
 
+    /**
+     * Checks whether the user is existing in cassandra.
+     * Holds an assertion and will fail unavertably if condition is not met.
+     * @param username username of user to look for
+     */
     private void checkExistenceOfUser(String username) {
         ResultSet resultSet = getUser(username);
         assertTrue("An user \'"+username+"\' for the keyspace should have been created, but was not.", resultSet.iterator().hasNext());
     }
 
+    /**
+     * Checks whether the user is non-existing in cassandra.
+     * Holds an assertion and will fail unavertably if condition is not met.
+     * @param username username of user to look for
+     */
     private void checkAbsenceOfUser(String username) {
         ResultSet resultSet = getUser(username);
         assertFalse("An user \'"+username+"\' for the keyspace should have been deleted, but was not.", resultSet.iterator().hasNext());
     }
 
+    /**
+     * Queries cassandra for the username in the system_auth.roles keyspace.
+     * @param username username of the user to look for
+     * @return a ResultSet with the answer of cassandra
+     */
     private ResultSet getUser(String username) {
         return cassandraDbService.executeStatement("SELECT * FROM system_auth.roles WHERE role = \'"+username+"\';");
     }
 
+    /**
+     * Checks whether the permissions of the given username do match the one provided.
+     * @param username username of the user to check permissions
+     * @param permissions List of permissions to expect (use {@linkplain #ADMIN_PERMISSIONS} and {@linkplain #USER_PERMISSIONS})
+     */
     private void checkExistingPermissionsOfUser(String username, List<String> permissions) {
         ResultSet resultSet = getPermissionsOfUser(username);
         Optional<Row> row = StreamSupport.stream(resultSet.spliterator(), false)
@@ -88,11 +113,20 @@ public class EmbeddedCassandraKeyspaceTest extends EmbeddedCassandraTestBase {
                 , permissionsFound.containsAll(permissions));
     }
 
+    /**
+     * Check whether no permissions are existing for an user
+     * @param username username of the user to check permissions
+     */
     private void checkAbsencePermissionsOfUser(String username) {
         ResultSet resultSet = getPermissionsOfUser(username);
         assertFalse("User \'"+username+"\' should have no permissions, but a permissions entry was found.", resultSet.iterator().hasNext());
     }
 
+    /**
+     * Queries cassandra for the permissions of an user.
+     * @param username username of the user to get permissions
+     * @return a ResultSet with the answer of cassandra
+     */
     private ResultSet getPermissionsOfUser(String username) {
         return cassandraDbService.executeStatement("SELECT * FROM system_auth.role_permissions WHERE role = \'" + username + "\';");
     }
