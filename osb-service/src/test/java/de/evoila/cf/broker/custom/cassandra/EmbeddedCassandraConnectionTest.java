@@ -15,7 +15,6 @@ public class EmbeddedCassandraConnectionTest extends EmbeddedCassandraTestBase {
      */
     @Test
     public void connectionTest() {
-        prepareConnection();
         ResultSet resultSet = cassandraDbService.executeStatement("SELECT keyspace_name from system_schema.keyspaces;");
         assertTrue("Querying for keyspaces returned an empty set, although system keyspaces should be present.", resultSet.iterator().hasNext());
     }
