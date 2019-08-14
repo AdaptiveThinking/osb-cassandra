@@ -20,26 +20,6 @@ stemcells:
     os: ubuntu-xenial
     version: latest
 
-variables:
-- name: cassandra_password
-  type: password
-- name: service_credentials
-  type: user
-  options:
-    username: service
-- name: exporter_credentials
-  type: user
-  options:
-    username: exporter
-- name: backup_credentials
-  type: user
-  options:
-    username: backup
-- name: user_credentials
-  type: user
-  options:
-    username: cassandra_user
-
 instance_groups:
   - name: cassandra
     instances: 3
