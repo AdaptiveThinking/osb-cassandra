@@ -32,8 +32,8 @@ public class CassandraDbService {
      * To encounter this time based error, a retry mechanism is build in, which does a maximum of retires
      * configured in this constant.
      */
-    public static final int MAX_CONNECTION_TRIES = 5;
-    public static final int CONNECTION_RETRY_DELAY = 3 * 1000;
+    public static final int MAX_CONNECTION_TRIES = 10;
+    public static final int CONNECTION_RETRY_DELAY = 5 * 1000;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
