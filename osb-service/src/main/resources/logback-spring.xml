@@ -9,6 +9,8 @@
 	</root>
 	
 	<logger name="de.evoila.cf" level="DEBUG" />
+
+	<logger name="com.datastax.oss.driver" level="DEBUG" />
 	
 	<logger name="org.springframework.core" level="INFO" />
 	

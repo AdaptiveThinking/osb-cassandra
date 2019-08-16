@@ -81,6 +81,13 @@ public class CassandraBindingService extends BindingServiceImpl {
         credentialStore.createUser(serviceInstance, bindingId);
         UsernamePasswordCredential usernamePasswordCredential = credentialStore.getUser(serviceInstance, bindingId);
 
+        log.debug("##### Service User for Binding #####");
+        log.debug("Username: " + serviceInstanceUsernamePasswordCredential.getUsername());
+        log.debug("ValueName: " + CredentialConstants.SERVICE_CREDENTIALS);
+        log.debug("ServiceInstanceId: " + serviceInstance.getId());
+        log.debug("Password: " + serviceInstanceUsernamePasswordCredential.getPassword());
+        log.debug("##### ##### #####");
+
         CassandraDbService cassandraDbService = cassandraCustomImplementation.connection(serviceInstance, plan, serviceInstanceUsernamePasswordCredential);
         cassandraCustomImplementation.bindRoleToDatabase(cassandraDbService, usernamePasswordCredential.getUsername(),
                 usernamePasswordCredential.getPassword(), database);

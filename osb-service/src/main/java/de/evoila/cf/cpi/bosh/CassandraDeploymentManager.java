@@ -49,6 +49,19 @@ public class CassandraDeploymentManager extends DeploymentManager {
             HashMap<String, Object> userProperties = adminUsers.get(0);
             UsernamePasswordCredential rootCredentials = credentialStore.createUser(serviceInstance,
                     CredentialConstants.SERVICE_CREDENTIALS, "service");
+
+            log.debug("##### Service User Creation #####");
+            log.debug("Username: " + rootCredentials.getUsername());
+            log.debug("ValueName: " + CredentialConstants.SERVICE_CREDENTIALS);
+            log.debug("ServiceInstanceId: " + serviceInstance.getId());
+            log.debug("Password: " + rootCredentials.getPassword());
+            log.debug("##### After Get #####");
+            UsernamePasswordCredential tmp = credentialStore.getUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS)
+            log.debug("Username: " + tmp.getUsername());
+            log.debug("ValueName: " + CredentialConstants.SERVICE_CREDENTIALS);
+            log.debug("ServiceInstanceId: " + serviceInstance.getId());
+            log.debug("Password: " + tmp.getPassword());
+
             userProperties.put("username", rootCredentials.getUsername());
             userProperties.put("password", rootCredentials.getPassword());
             userProperties.put("superuser", true);
