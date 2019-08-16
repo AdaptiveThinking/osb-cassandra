@@ -56,7 +56,7 @@ public class CassandraDeploymentManager extends DeploymentManager {
             log.debug("ServiceInstanceId: " + serviceInstance.getId());
             log.debug("Password: " + rootCredentials.getPassword());
             log.debug("##### After Get #####");
-            UsernamePasswordCredential tmp = credentialStore.getUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS)
+            UsernamePasswordCredential tmp = credentialStore.getUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS);
             log.debug("Username: " + tmp.getUsername());
             log.debug("ValueName: " + CredentialConstants.SERVICE_CREDENTIALS);
             log.debug("ServiceInstanceId: " + serviceInstance.getId());
