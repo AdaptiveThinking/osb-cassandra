@@ -27,7 +27,6 @@ public class EmbeddedCassandraTestBase {
 
     private static final Logger log = LoggerFactory.getLogger(EmbeddedCassandraTestBase.class);
 
-    public static final int AUTHENTICATION_RETRIES = 5;
     public static final String USERNAME = "cassandra";
     public static final String PASSWORD = "cassandra";
     public static final String DATACENTER = "datacenter1";
@@ -38,7 +37,6 @@ public class EmbeddedCassandraTestBase {
     public static final String TEST_USER_PASSWORD= "test_password";
 
 
-    private static boolean wasAlreadyConnected = false;
     private static int port;
     private static String ip;
     private static String clusterName;
@@ -55,31 +53,11 @@ public class EmbeddedCassandraTestBase {
         List<ServerAddress> addresses = new LinkedList<>();
         addresses.add(new ServerAddress("embedded_cassandra",ip, port));
 
-        if (!wasAlreadyConnected) {
-            try {
-                log.info("Give EmbeddedCassandra some time to create the superuser, which is necessary to connect. This is done in an optional task and executed after startup of cassandra.");
-                Thread.sleep(10*1000);
-            } catch (InterruptedException ex) {}
-        }
-
-        boolean connected = false;
-        int tries = 0;
-        while (!connected && tries < AUTHENTICATION_RETRIES) {
-            connected = cassandraDbService.createConnection(username,
+        cassandraDbService.createConnection(username,
                     password,
                     database,
                     DATACENTER,
                     addresses);
-            if (!connected) {
-                try {
-                    log.info("Waiting for EmbeddedCassandra to execute the Optional task to create the superuser... Normally takes between 7 and 10 seconds");
-                    cassandraDbService.closeConnection();
-                    Thread.sleep(2500);
-                } catch (InterruptedException ex) {}
-            }
-            tries++;
-        }
-        wasAlreadyConnected = connected;
     }
 
     @BeforeClass

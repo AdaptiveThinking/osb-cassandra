@@ -27,6 +27,14 @@ public class CassandraDbService {
      */
     public static final String DATACENTER_DEFAULT = "bosh-dc1";
 
+    /**
+     * Cassandra might still be in the process of creation the user, which is used to authenticate.
+     * To encounter this time based error, a retry mechanism is build in, which does a maximum of retires
+     * configured in this constant.
+     */
+    public static final int MAX_CONNECTION_TRIES = 10;
+    public static final int CONNECTION_RETRY_DELAY = 5 * 1000;
+
     private Logger log = LoggerFactory.getLogger(getClass());
 
     private CqlSession session;
@@ -38,6 +46,12 @@ public class CassandraDbService {
      * The created session is stored in the object for later usage via {@linkplain #executeStatement(String)}.
      * It is recommended to close this connection after usage instead of keeping it open the whole time.
      * The connection implements an AutoClose feature, but it is recommended to {@linkplain #closeConnection()} in a controlled way.
+     *
+     * Due to the nature of cassandra, a retry mechanism is added to counter the perk of cassandra,
+     * that a role / user creation operation can be running async and makes room for connection tries with
+     * a not yet created role / user, which will end in a bad credentials error. The connection is retried until
+     * {@linkplain #MAX_CONNECTION_TRIES} is reached or the connection is established.
+     *
      * @param username to authenticate against cassandra
      * @param password to authenticate against cassandra
      * @param database holds the name of the keyspace in cassandra to target
@@ -46,26 +60,37 @@ public class CassandraDbService {
      * @return a flag that indicates the connection status
      */
     public boolean createConnection(String username, String password, String database, String datacenter, List<ServerAddress> serverAddresses) {
-        try {
-            String keyspace = database;
-            if (StringUtils.isEmpty(datacenter)) {
-                datacenter = DATACENTER_DEFAULT;
-            }
-
-            CqlSessionBuilder sessionBuilder = CqlSession.builder();
-            for (ServerAddress sA : serverAddresses) {
-                sessionBuilder.addContactPoint(new InetSocketAddress(sA.getIp(), sA.getPort()));
-            }
-            session = sessionBuilder
-                    .withKeyspace(keyspace)
-                    .withLocalDatacenter(datacenter)
-                    .withConfigLoader(getCassandraConfigHolder(username, password))
-                    .build();
-        } catch (Exception e) {
-            log.info("Could not establish client", e);
-            return false;
+        String keyspace = database;
+        if (StringUtils.isEmpty(datacenter)) {
+            datacenter = DATACENTER_DEFAULT;
         }
-        return true;
+
+        CqlSessionBuilder sessionBuilder = CqlSession.builder();
+        for (ServerAddress sA : serverAddresses) {
+            sessionBuilder.addContactPoint(new InetSocketAddress(sA.getIp(), sA.getPort()));
+        }
+
+        sessionBuilder.withKeyspace(keyspace)
+                .withLocalDatacenter(datacenter)
+                .withConfigLoader(getCassandraConfigHolder(username, password));
+
+        int tries = 0;
+        while (!isConnected() && tries < MAX_CONNECTION_TRIES) {
+            try {
+                session = sessionBuilder.build();
+            } catch (Exception e) {
+                tries++;
+                log.info("Could not establish client (" + tries + " of " + MAX_CONNECTION_TRIES + " tries)", e);
+                try {
+                    log.info("Waiting "+CONNECTION_RETRY_DELAY+"ms until the next try ...");
+                    Thread.sleep(CONNECTION_RETRY_DELAY);
+                } catch (InterruptedException ex) {
+                    log.debug("Retry sleep was interrupted.", ex);
+                }
+            }
+        }
+
+        return isConnected();
     }
 
     public boolean isConnected() {
