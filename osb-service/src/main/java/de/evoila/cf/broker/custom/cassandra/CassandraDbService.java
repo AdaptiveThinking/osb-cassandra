@@ -29,7 +29,7 @@ public class CassandraDbService {
 
     /**
      * Cassandra might still be in the process of creation the user, which is used to authenticate.
-     * To encounter this time based error, a retry mechanism is build in, which does a maximum of retires
+     * To encounter this time based error, a retry mechanism is build in, which does a maximum of retries
      * configured in this constant.
      */
     public static final int MAX_CONNECTION_TRIES = 10;
@@ -37,8 +37,18 @@ public class CassandraDbService {
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
+    /**
+     * Session for communicating with cassandra.
+     * To open a connection call {@linkplain #createConnection(String, String, String, String, List)}.
+     * To check for connection status call {@linkplain #isConnected()}.
+     * To close the connection call {@linkplain #closeConnection()}
+     */
     private CqlSession session;
 
+    /**
+     * Config singleton object for the cassandra driver.
+     * Get access to this singleton via {@linkplain #getCassandraConfigHolder(String, String)}.
+     */
     private static DriverConfigLoader cassandraConfigHolder;
 
     /**
@@ -93,15 +103,28 @@ public class CassandraDbService {
         return isConnected();
     }
 
+    /**
+     * Checks and returns the connection state of the underlying {@linkplain #session}.
+     * @return false if session is null or {@linkplain CqlSession#isClosed()}.
+     */
     public boolean isConnected() {
         return session != null && !session.isClosed();
     }
 
+    /**
+     * Closes the session, if it is still open.
+     */
     public void closeConnection() {
         if (isConnected())
             session.close();
     }
 
+    /**
+     * Executes a Cassandra statement via the underlying {@linkplain #session}.
+     * This methods performs no checks, whether the session exists or is already closed!
+     * @param statement string of a cassandra statement to execute
+     * @return the {@linkplain ResultSet} object
+     */
     public ResultSet executeStatement(String statement) {
         return session.execute(statement);
     }
@@ -117,7 +140,7 @@ public class CassandraDbService {
      * - DefaultDriverOption.REQUEST_TIMEOUT
      * @param username to authenticate against cassandra
      * @param password to authenticate against cassandra
-     * @return a DriverConfigLoader with the three above listed options.
+     * @return a DriverConfigLoader with the four above listed options.
      */
     public DriverConfigLoader getCassandraConfigHolder(String username, String password) {
         if (cassandraConfigHolder == null) {
