@@ -10,7 +10,6 @@ import de.evoila.cf.broker.model.catalog.plan.Plan;
 import de.evoila.cf.broker.model.credential.UsernamePasswordCredential;
 import de.evoila.cf.broker.repository.*;
 import de.evoila.cf.broker.service.AsyncBindingService;
-import de.evoila.cf.broker.service.HAProxyService;
 import de.evoila.cf.broker.service.impl.BindingServiceImpl;
 import de.evoila.cf.broker.util.ServiceInstanceUtils;
 import de.evoila.cf.cpi.bosh.CredentialConstants;
@@ -52,12 +51,12 @@ public class CassandraBindingService extends BindingServiceImpl {
                                    CassandraExistingServiceFactory cassandraExistingServiceFactory,
                                    CassandraCustomImplementation cassandraCustomImplementation,
                                    ServiceInstanceRepository serviceInstanceRepository, RouteBindingRepository routeBindingRepository,
-                                   @Autowired(required = false) HAProxyService haProxyService, CredentialStore credentialStore,
+                                   CredentialStore credentialStore,
                                    JobRepository jobRepository, AsyncBindingService asyncBindingService,
                                    PlatformRepository platformRepository) {
         super(bindingRepository, serviceDefinitionRepository,
                 serviceInstanceRepository, routeBindingRepository,
-                haProxyService, jobRepository,
+                jobRepository,
                 asyncBindingService, platformRepository);
         this.cassandraExistingServiceFactory = cassandraExistingServiceFactory;
         this.cassandraCustomImplementation = cassandraCustomImplementation;
