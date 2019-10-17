@@ -5,7 +5,6 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
-import com.datastax.oss.driver.internal.core.auth.PlainTextAuthProvider;
 import de.evoila.cf.broker.model.catalog.ServerAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +46,7 @@ public class CassandraDbService {
 
     /**
      * Config singleton object for the cassandra driver.
-     * Get access to this singleton via {@linkplain #getCassandraConfigHolder(String, String)}.
+     * Get access to this singleton via {@linkplain #getCassandraConfigHolder()}.
      */
     private static DriverConfigLoader cassandraConfigHolder;
 
@@ -75,14 +74,19 @@ public class CassandraDbService {
             datacenter = DATACENTER_DEFAULT;
         }
 
+        log.info("Gather contact points:");
         CqlSessionBuilder sessionBuilder = CqlSession.builder();
         for (ServerAddress sA : serverAddresses) {
-            sessionBuilder.addContactPoint(new InetSocketAddress(sA.getIp(), sA.getPort()));
+            log.info(" ... server: " + sA.getIp() + "/" + sA.getPort());
+            sessionBuilder.addContactPoint(new InetSocketAddress(sA.getIp(), sA.getPort()))
+                    .withAuthCredentials(username,password);
         }
 
         sessionBuilder.withKeyspace(keyspace)
                 .withLocalDatacenter(datacenter)
-                .withConfigLoader(getCassandraConfigHolder(username, password));
+                .withConfigLoader(getCassandraConfigHolder());
+
+        log.info("Set credentials for user: " + username);
 
         int tries = 0;
         while (!isConnected() && tries < MAX_CONNECTION_TRIES) {
@@ -138,16 +142,11 @@ public class CassandraDbService {
      * - DefaultDriverOption.AUTH_PROVIDER_USER_NAME
      * - DefaultDriverOption.AUTH_PROVIDER_PASSWORD
      * - DefaultDriverOption.REQUEST_TIMEOUT
-     * @param username to authenticate against cassandra
-     * @param password to authenticate against cassandra
      * @return a DriverConfigLoader with the four above listed options.
      */
-    public DriverConfigLoader getCassandraConfigHolder(String username, String password) {
+    public DriverConfigLoader getCassandraConfigHolder() {
         if (cassandraConfigHolder == null) {
             cassandraConfigHolder = DriverConfigLoader.programmaticBuilder()
-                    .withClass(DefaultDriverOption.AUTH_PROVIDER_CLASS, PlainTextAuthProvider.class)
-                    .withString(DefaultDriverOption.AUTH_PROVIDER_USER_NAME, username)
-                    .withString(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, password)
                     .withDuration(DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofSeconds(60))
                     .build();
         }
