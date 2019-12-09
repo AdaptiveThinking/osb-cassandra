@@ -33,8 +33,6 @@ instance_groups:
     jobs:
       - name: cassandra
         release: osb-bosh-cassandra
-      - name: node_exporter
-        release: osb-bosh-monitoring
     properties:
       cluster_name: osb-cassandra
       cassandra_exporter:
@@ -44,6 +42,8 @@ instance_groups:
         username: ((backup_credentials.username))
         password: ((backup_credentials.password))
       cassandra:
+        prometheus_exporter:
+          enabled: true
         cluster_name: osb-cassandra
         admin_users:
         - username: ((service_credentials.username))
