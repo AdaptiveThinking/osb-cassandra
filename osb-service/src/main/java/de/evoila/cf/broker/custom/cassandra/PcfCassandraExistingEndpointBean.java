@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 @Service
 @Profile("pcf")
@@ -30,11 +32,6 @@ public class PcfCassandraExistingEndpointBean extends CassandraExistingEndpointB
     }
 
     public void setPcfHosts(String pcfHosts) throws IOException {
-        List<String> pcfHostList = ObjectMapperUtils.getObjectMapper().readValue(pcfHosts, new TypeReference<List<String>>(){});
-        for (String host : pcfHostList) {
-            getHosts().add(new ServerAddress(getName(), host, getPort()));
-        }
-
         this.pcfHosts = pcfHosts;
     }
 
@@ -50,4 +47,12 @@ public class PcfCassandraExistingEndpointBean extends CassandraExistingEndpointB
     public void setDatacenter(String datacenter) {
         this.datacenter = datacenter;
     }
+
+   @PostConstruct
+   public void initHosts() throws Exception {
+        List<String> pcfHostList = ObjectMapperUtils.getObjectMapper().readValue(this.pcfHosts, new TypeReference<List<String>>(){});
+        for (String host : pcfHostList) {
+            getHosts().add(new ServerAddress(getName(), host, getPort()));
+        }
+   }
 }

@@ -7,8 +7,8 @@ spring:
       host: "${MONGODB_HOST}"
 existing:
   endpoint:
+    port: 9042
     pcfHosts: "${EXISTING_HOSTS}"
     name: cassandra
-    port: 9092
 #haproxy:
 #  uri: "https://${SERVICE_KEY_MANAGER}/agents/${HAPROXY_AGENT_ID}/schemas?type=listen"

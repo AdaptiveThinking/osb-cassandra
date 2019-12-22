@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 
 @Service
+@Profile("!pcf")
 @ConfigurationProperties(prefix = "existing.endpoint")
 //@ConditionalOnMissingBean(CassandraExistingEndpointBean.class)
 public class CassandraExistingEndpointBean extends ExistingEndpoint {
