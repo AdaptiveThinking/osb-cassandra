@@ -4,7 +4,7 @@
 package de.evoila.cf.cpi.existing;
 
 
-import de.evoila.cf.broker.bean.ExistingEndpointBean;
+import de.evoila.cf.broker.bean.impl.ExistingEndpoint;
 import de.evoila.cf.broker.custom.cassandra.CassandraCustomImplementation;
 import de.evoila.cf.broker.custom.cassandra.CassandraDbService;
 import de.evoila.cf.broker.custom.cassandra.CassandraExistingEndpointBean;
@@ -18,6 +18,7 @@ import de.evoila.cf.broker.service.availability.ServicePortAvailabilityVerifier;
 import de.evoila.cf.cpi.bosh.CredentialConstants;
 import de.evoila.cf.security.credentials.CredentialStore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -26,7 +27,7 @@ import java.util.Map;
  * @author Johannes Hiemer.
  */
 @Service
-@ConditionalOnBean(ExistingEndpointBean.class)
+@ConditionalOnBean(CassandraExistingEndpointBean.class)
 public class CassandraExistingServiceFactory extends ExistingServiceFactory {
 
 

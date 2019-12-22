@@ -1,6 +1,6 @@
 package de.evoila.cf.broker.custom.cassandra;
 
-import de.evoila.cf.broker.bean.ExistingEndpointBean;
+import de.evoila.cf.broker.bean.impl.ExistingEndpoint;
 import de.evoila.cf.broker.model.Platform;
 import de.evoila.cf.broker.model.ServiceInstance;
 import de.evoila.cf.broker.model.catalog.ServerAddress;
