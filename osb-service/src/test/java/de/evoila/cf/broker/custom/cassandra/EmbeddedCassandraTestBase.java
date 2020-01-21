@@ -63,10 +63,13 @@ public class EmbeddedCassandraTestBase {
 
     @BeforeClass
     public static void prepareEmbeddedCassandra() throws IOException, TTransportException {
-        EmbeddedCassandraServerHelper.startEmbeddedCassandra("embedded_cassandra.yml", 20000);
+        EmbeddedCassandraServerHelper.startEmbeddedCassandra("embedded_cassandra.yml");
         ip = EmbeddedCassandraServerHelper.getHost();
         port = EmbeddedCassandraServerHelper.getNativeTransportPort();
         clusterName = EmbeddedCassandraServerHelper.getClusterName();
+
+        // Wait for cluster to be started completely, including the superuser to be created
+        try { Thread.sleep(20000); } catch(InterruptedException e){}
         log.info("Created embedded cassandra under \"" + clusterName + "\" - " + ip + ":"+port);
 
         cassandraDbService = new CassandraDbService();
