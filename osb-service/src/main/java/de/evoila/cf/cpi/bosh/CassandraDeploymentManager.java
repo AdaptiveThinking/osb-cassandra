@@ -26,7 +26,7 @@ public class CassandraDeploymentManager extends DeploymentManager {
 
     private CredentialStore credentialStore;
 
-    CassandraDeploymentManager(BoshProperties boshProperties, Environment environment, CredentialStore credentialStore){
+    CassandraDeploymentManager(BoshProperties boshProperties, Environment environment, CredentialStore credentialStore) {
         super(boshProperties, environment);
         this.credentialStore = credentialStore;
     }
@@ -49,6 +49,19 @@ public class CassandraDeploymentManager extends DeploymentManager {
             HashMap<String, Object> userProperties = adminUsers.get(0);
             UsernamePasswordCredential rootCredentials = credentialStore.createUser(serviceInstance,
                     CredentialConstants.SERVICE_CREDENTIALS, "service");
+
+            log.trace("##### Service User Creation #####" +
+                    "Username: " + rootCredentials.getUsername() + "\n" +
+                    "ValueName: " + CredentialConstants.SERVICE_CREDENTIALS + "\n" +
+                    "ServiceInstanceId: " + serviceInstance.getId() + "\n" +
+                    "Password: " + rootCredentials.getPassword() + "\n" +
+                    "##### After Get #####\n");
+            UsernamePasswordCredential tmp = credentialStore.getUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS);
+            log.trace("Username: " + tmp.getUsername() + "\n" +
+                    "ValueName: " + CredentialConstants.SERVICE_CREDENTIALS + "\n" +
+                    "ServiceInstanceId: " + serviceInstance.getId() + "\n" +
+                    "Password: " + tmp.getPassword());
+
             userProperties.put("username", rootCredentials.getUsername());
             userProperties.put("password", rootCredentials.getPassword());
             userProperties.put("superuser", true);

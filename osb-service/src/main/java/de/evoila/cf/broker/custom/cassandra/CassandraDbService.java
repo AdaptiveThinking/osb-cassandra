@@ -34,7 +34,7 @@ public class CassandraDbService {
      * configured in this constant.
      */
     public static final int MAX_CONNECTION_TRIES = 10;
-    public static final int CONNECTION_RETRY_DELAY = 5 * 1000;
+    public static final int CONNECTION_RETRY_DELAY = 3 * 1000;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
