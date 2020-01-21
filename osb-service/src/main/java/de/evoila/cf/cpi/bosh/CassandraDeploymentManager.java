@@ -26,7 +26,7 @@ public class CassandraDeploymentManager extends DeploymentManager {
 
     private CredentialStore credentialStore;
 
-    CassandraDeploymentManager(BoshProperties boshProperties, Environment environment, CredentialStore credentialStore){
+    CassandraDeploymentManager(BoshProperties boshProperties, Environment environment, CredentialStore credentialStore) {
         super(boshProperties, environment);
         this.credentialStore = credentialStore;
     }
@@ -50,17 +50,17 @@ public class CassandraDeploymentManager extends DeploymentManager {
             UsernamePasswordCredential rootCredentials = credentialStore.createUser(serviceInstance,
                     CredentialConstants.SERVICE_CREDENTIALS, "service");
 
-            log.debug("##### Service User Creation #####");
-            log.debug("Username: " + rootCredentials.getUsername());
-            log.debug("ValueName: " + CredentialConstants.SERVICE_CREDENTIALS);
-            log.debug("ServiceInstanceId: " + serviceInstance.getId());
-            log.debug("Password: " + rootCredentials.getPassword());
-            log.debug("##### After Get #####");
+            log.trace("##### Service User Creation #####" +
+                    "Username: " + rootCredentials.getUsername() + "\n" +
+                    "ValueName: " + CredentialConstants.SERVICE_CREDENTIALS + "\n" +
+                    "ServiceInstanceId: " + serviceInstance.getId() + "\n" +
+                    "Password: " + rootCredentials.getPassword() + "\n" +
+                    "##### After Get #####\n");
             UsernamePasswordCredential tmp = credentialStore.getUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS);
-            log.debug("Username: " + tmp.getUsername());
-            log.debug("ValueName: " + CredentialConstants.SERVICE_CREDENTIALS);
-            log.debug("ServiceInstanceId: " + serviceInstance.getId());
-            log.debug("Password: " + tmp.getPassword());
+            log.trace("Username: " + tmp.getUsername() + "\n" +
+                    "ValueName: " + CredentialConstants.SERVICE_CREDENTIALS + "\n" +
+                    "ServiceInstanceId: " + serviceInstance.getId() + "\n" +
+                    "Password: " + tmp.getPassword());
 
             userProperties.put("username", rootCredentials.getUsername());
             userProperties.put("password", rootCredentials.getPassword());
