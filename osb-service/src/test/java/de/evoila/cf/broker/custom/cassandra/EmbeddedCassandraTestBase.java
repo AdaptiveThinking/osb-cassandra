@@ -1,5 +1,6 @@
 package de.evoila.cf.broker.custom.cassandra;
 
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
 import de.evoila.cf.broker.model.catalog.ServerAddress;
@@ -85,13 +86,13 @@ public class EmbeddedCassandraTestBase {
      */
     private void dropNonSystemKeyspaces() {
 
-        ResultSet resultSet = cassandraDbService.executeStatement("SELECT keyspace_name FROM system_schema.keyspaces;");
+        ResultSet resultSet = cassandraDbService.executeStatement("SELECT keyspace_name FROM system_schema.keyspaces;", ConsistencyLevel.ONE);
         Iterator<Row> iterator = resultSet.iterator();
         while (iterator.hasNext()) {
             Row row = iterator.next();
             String keyspaceName = row.getString("keyspace_name");
             if (!keyspaceName.startsWith("system")) {
-                cassandraDbService.executeStatement("DROP KEYSPACE IF EXISTS " + keyspaceName);
+                cassandraDbService.executeStatement("DROP KEYSPACE IF EXISTS " + keyspaceName, ConsistencyLevel.ONE);
             }
         }
     }

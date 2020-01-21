@@ -1,5 +1,6 @@
 package de.evoila.cf.broker.custom.cassandra;
 
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import org.junit.*;
 
@@ -15,7 +16,7 @@ public class EmbeddedCassandraConnectionTest extends EmbeddedCassandraTestBase {
      */
     @Test
     public void connectionTest() {
-        ResultSet resultSet = cassandraDbService.executeStatement("SELECT keyspace_name from system_schema.keyspaces;");
+        ResultSet resultSet = cassandraDbService.executeStatement("SELECT keyspace_name from system_schema.keyspaces;", ConsistencyLevel.LOCAL_QUORUM);
         assertTrue("Querying for keyspaces returned an empty set, although system keyspaces should be present.", resultSet.iterator().hasNext());
     }
 }

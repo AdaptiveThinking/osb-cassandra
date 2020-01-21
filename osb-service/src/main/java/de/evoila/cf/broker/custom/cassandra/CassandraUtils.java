@@ -11,7 +11,7 @@ public class CassandraUtils {
                     .substring(0, 15)
                     .toLowerCase();
         else
-            return null;
+            return uuid;
     }
 
 }

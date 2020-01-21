@@ -1,5 +1,6 @@
 package de.evoila.cf.broker.custom.cassandra;
 
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import org.junit.After;
 import org.junit.Before;
@@ -42,7 +43,7 @@ public class EmbeddedCassandraBindingFunctionsTest extends EmbeddedCassandraTest
     @Test
     public void basicBindingFunctionsTest() {
         // Test table non-existence
-        ResultSet resultSet = cassandraDbService.executeStatement(SELECT_TEST_KEYSPACE);
+        ResultSet resultSet = cassandraDbService.executeStatement(SELECT_TEST_KEYSPACE, ConsistencyLevel.ONE);
         assertFalse("Test table should not exist yet.", resultSet.iterator().hasNext());
 
         // Test CREATE TABLE permission
@@ -50,38 +51,38 @@ public class EmbeddedCassandraBindingFunctionsTest extends EmbeddedCassandraTest
                 "id int PRIMARY KEY," +
                 "test_column1 text," +
                 "test_column2 int" +
-                ");");
-        resultSet = cassandraDbService.executeStatement("SELECT * from system_schema.keyspaces WHERE keyspace_name = \'"+KEYSPACE_NAME+"\';");
+                ");", ConsistencyLevel.LOCAL_QUORUM);
+        resultSet = cassandraDbService.executeStatement("SELECT * from system_schema.keyspaces WHERE keyspace_name = \'"+KEYSPACE_NAME+"\';", ConsistencyLevel.LOCAL_QUORUM);
         assertTrue("Querying for a new table did not create a table.", resultSet.iterator().hasNext());
 
-        resultSet = cassandraDbService.executeStatement(SELECT_FROM_TABLE_QUERY);
+        resultSet = cassandraDbService.executeStatement(SELECT_FROM_TABLE_QUERY, ConsistencyLevel.LOCAL_QUORUM);
         assertFalse("Table should be empty, but is not.", resultSet.iterator().hasNext());
 
 
         // Test INSERT permission
         cassandraDbService.executeStatement("INSERT INTO "+TEST_TABLE+" (id, test_column1, test_column2) VALUES(" +
-                "1, \'test\', 42);");
+                "1, \'test\', 42);", ConsistencyLevel.LOCAL_QUORUM);
         cassandraDbService.executeStatement("INSERT INTO "+TEST_TABLE+" (id, test_column1, test_column2) VALUES(" +
-                "2, \'testing\', 99);");
-        resultSet = cassandraDbService.executeStatement(SELECT_FROM_TABLE_QUERY);
+                "2, \'testing\', 99);", ConsistencyLevel.LOCAL_QUORUM);
+        resultSet = cassandraDbService.executeStatement(SELECT_FROM_TABLE_QUERY, ConsistencyLevel.LOCAL_QUORUM);
         assertTrue("There should be at least one row in the table.", resultSet.iterator().hasNext() && resultSet.iterator().next() != null);
         assertTrue("There should be two rows in the table, but are not.", resultSet.iterator().hasNext() && resultSet.iterator().next() != null);
         assertFalse("There should be not more than two rows, but found a third one.", resultSet.iterator().hasNext());
 
         // Test DELETE permission
-        cassandraDbService.executeStatement("DELETE FROM "+KEYSPACE_NAME+"."+TEST_TABLE+" WHERE id = 1;");
-        resultSet = cassandraDbService.executeStatement(SELECT_FROM_TABLE_QUERY);
+        cassandraDbService.executeStatement("DELETE FROM "+KEYSPACE_NAME+"."+TEST_TABLE+" WHERE id = 1;", ConsistencyLevel.LOCAL_QUORUM);
+        resultSet = cassandraDbService.executeStatement(SELECT_FROM_TABLE_QUERY, ConsistencyLevel.LOCAL_QUORUM);
         assertTrue("There should be one row in the table after deleting the second one.", resultSet.iterator().hasNext() && resultSet.iterator().next() != null);
         assertFalse("There should be not more than one row after deleting one, but found a second one.", resultSet.iterator().hasNext());
 
         // Test TRUNK permission
-        cassandraDbService.executeStatement("TRUNCATE TABLE "+KEYSPACE_NAME+"."+TEST_TABLE+";");
-        resultSet = cassandraDbService.executeStatement(SELECT_FROM_TABLE_QUERY);
+        cassandraDbService.executeStatement("TRUNCATE TABLE "+KEYSPACE_NAME+"."+TEST_TABLE+";", ConsistencyLevel.LOCAL_QUORUM);
+        resultSet = cassandraDbService.executeStatement(SELECT_FROM_TABLE_QUERY, ConsistencyLevel.LOCAL_QUORUM);
         assertFalse("Table should be empty after truncate, but found at least one row.", resultSet.iterator().hasNext());
 
         // Test DROP TABLE permission
-        cassandraDbService.executeStatement("DROP TABLE "+KEYSPACE_NAME+"."+TEST_TABLE+";");
-        resultSet = cassandraDbService.executeStatement(SELECT_TEST_KEYSPACE);
+        cassandraDbService.executeStatement("DROP TABLE "+KEYSPACE_NAME+"."+TEST_TABLE+";", ConsistencyLevel.LOCAL_QUORUM);
+        resultSet = cassandraDbService.executeStatement(SELECT_TEST_KEYSPACE, ConsistencyLevel.LOCAL_QUORUM);
         assertFalse("Table should not exist after dropping it, but it does.", resultSet.iterator().hasNext());
     }
 
