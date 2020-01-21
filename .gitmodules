@@ -1,6 +1,3 @@
-[submodule "cf-service-broker-dashboard"]
-	path = cf-service-broker-dashboard
-	url = git@github.com:evoila/cf-service-broker-dashboard.git
 [submodule "osb-dashboard"]
 	path = osb-dashboard
 	url = git@github.com:evoila/cf-service-broker-dashboard.git
