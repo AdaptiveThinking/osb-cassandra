@@ -30,7 +30,7 @@ import java.util.Map;
 @Service
 public class CassandraBindingService extends BindingServiceImpl {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     private static String URI = "uri";
 
@@ -63,7 +63,7 @@ public class CassandraBindingService extends BindingServiceImpl {
     }
 
     @Override
-	protected Map<String, Object> createCredentials(String bindingId, ServiceInstanceBindingRequest serviceInstanceBindingRequest,
+    protected Map<String, Object> createCredentials(String bindingId, ServiceInstanceBindingRequest serviceInstanceBindingRequest,
                                                     ServiceInstance serviceInstance, Plan plan, ServerAddress host) throws ServiceBrokerException {
         UsernamePasswordCredential serviceInstanceUsernamePasswordCredential = credentialStore
                 .getUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS);
@@ -79,12 +79,12 @@ public class CassandraBindingService extends BindingServiceImpl {
         credentialStore.createUser(serviceInstance, bindingId);
         UsernamePasswordCredential usernamePasswordCredential = credentialStore.getUser(serviceInstance, bindingId);
 
-        log.debug("##### Service User for Binding #####");
-        log.debug("Username: " + serviceInstanceUsernamePasswordCredential.getUsername());
-        log.debug("ValueName: " + CredentialConstants.SERVICE_CREDENTIALS);
-        log.debug("ServiceInstanceId: " + serviceInstance.getId());
-        log.debug("Password: " + serviceInstanceUsernamePasswordCredential.getPassword());
-        log.debug("##### ##### #####");
+        log.trace("##### Service User for Binding ##### \n" +
+                "Username: " + serviceInstanceUsernamePasswordCredential.getUsername() + "\n" +
+                "ValueName: " + CredentialConstants.SERVICE_CREDENTIALS + "\n" +
+                "ServiceInstanceId: " + serviceInstance.getId() + "\n" +
+                "Password: " + serviceInstanceUsernamePasswordCredential.getPassword() + "\n" +
+                "##### ##### #####");
 
         CassandraDbService cassandraDbService = cassandraCustomImplementation.connection(serviceInstance, plan, serviceInstanceUsernamePasswordCredential);
         cassandraCustomImplementation.bindRoleToDatabase(cassandraDbService, usernamePasswordCredential.getUsername(),
@@ -113,10 +113,10 @@ public class CassandraBindingService extends BindingServiceImpl {
         credentials.put(DATABASE, database);
 
         return credentials;
-	}
+    }
 
     @Override
-    protected void unbindService(ServiceInstanceBinding binding, ServiceInstance serviceInstance, Plan plan)  {
+    protected void unbindService(ServiceInstanceBinding binding, ServiceInstance serviceInstance, Plan plan) {
         UsernamePasswordCredential serviceInstanceUsernamePasswordCredential = credentialStore
                 .getUser(serviceInstance, CredentialConstants.SERVICE_CREDENTIALS);
 
