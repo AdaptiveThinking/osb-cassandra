@@ -31,20 +31,25 @@ public class CassandraCustomImplementation {
         String createStatement = "CREATE KEYSPACE " + database + " WITH " +
                 "replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };";
         cassandraDbService.executeStatement(createStatement);
-
         this.createRoleAndPermissions(cassandraDbService, database);
+        // sleep to allow for the propagation of new settings throughout the cluster
+//        try { Thread.sleep(5000); } catch(InterruptedException e){}
+
     }
 
     private void createRoleAndPermissions(CassandraDbService cassandraDbService, String database) {
+
         String roleAdminStatement = "CREATE ROLE IF NOT EXISTS " + database + "_admin;";
         cassandraDbService.executeStatement(roleAdminStatement);
-
+        // sleep to allow for the propagation of new settings throughout the cluster
+//        try { Thread.sleep(5000); } catch(InterruptedException e){}
         String permissionAdminStatement = "GRANT ALL PERMISSIONS on KEYSPACE " + database + " TO " + database + "_admin;";
         cassandraDbService.executeStatement(permissionAdminStatement);
 
         String roleStatement = "CREATE ROLE IF NOT EXISTS " + database + "_user;";
         cassandraDbService.executeStatement(roleStatement);
-
+        // sleep to allow for the propagation of new settings throughout the cluster
+//        try { Thread.sleep(5000); } catch(InterruptedException e){}
         String permissionStatement = "GRANT ALL PERMISSIONS on KEYSPACE " + database + " TO " + database + "_user;";
         cassandraDbService.executeStatement(permissionStatement);
     }

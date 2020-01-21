@@ -24,13 +24,13 @@ import java.util.Optional;
  */
 @Service
 @ConditionalOnBean(BoshProperties.class)
-public class CassamdraBoshPlatformService extends BoshPlatformService {
+public class CassandraBoshPlatformService extends BoshPlatformService {
 
     private static final int defaultPort = 9042;
 
     private CredentialStore credentialStore;
 
-    CassamdraBoshPlatformService(PlatformRepository repository, CatalogService catalogService,
+    CassandraBoshPlatformService(PlatformRepository repository, CatalogService catalogService,
                                  ServicePortAvailabilityVerifier availabilityVerifier,
                                  BoshProperties boshProperties, Optional<DashboardClient> dashboardClient,
                                  Environment environment, CredentialStore credentialStore) {
