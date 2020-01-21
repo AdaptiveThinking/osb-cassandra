@@ -1,5 +1,6 @@
 package de.evoila.cf.broker.custom.cassandra;
 
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
 import org.junit.Before;
@@ -31,7 +32,7 @@ public class EmbeddedCassandraRoleTest extends EmbeddedCassandraTestBase {
     public void roleTest() {
         cassandraImplementation.bindRoleToDatabase(cassandraDbService, TEST_USER_NAME, TEST_USER_PASSWORD, KEYSPACE_NAME);
 
-        ResultSet resultSet = cassandraDbService.executeStatement("SELECT * FROM system_auth.roles;");
+        ResultSet resultSet = cassandraDbService.executeStatement("SELECT * FROM system_auth.roles;", ConsistencyLevel.LOCAL_QUORUM);
         Optional<Row> row = StreamSupport.stream(resultSet.spliterator(), false)
                 .filter(r -> r.getString("role").equals(TEST_USER_NAME))
                 .findAny();
@@ -43,7 +44,7 @@ public class EmbeddedCassandraRoleTest extends EmbeddedCassandraTestBase {
         assertTrue("", row.get().getSet("member_of", String.class).contains(KEYSPACE_NAME + "_user"));
 
         cassandraImplementation.unbindRoleFromDatabase(cassandraDbService, TEST_USER_NAME);
-        resultSet = cassandraDbService.executeStatement("SELECT * FROM system_auth.roles;");
+        resultSet = cassandraDbService.executeStatement("SELECT * FROM system_auth.roles;", ConsistencyLevel.LOCAL_QUORUM);
         row = StreamSupport.stream(resultSet.spliterator(), false)
                 .filter(r -> r.getString("role").equals(TEST_USER_NAME))
                 .findAny();

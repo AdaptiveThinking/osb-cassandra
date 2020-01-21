@@ -1,10 +1,12 @@
 package de.evoila.cf.broker.custom.cassandra;
 
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import de.evoila.cf.broker.model.catalog.ServerAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,10 +128,11 @@ public class CassandraDbService {
     /**
      * Executes a Cassandra statement via the underlying {@linkplain #session}.
      * This methods performs no checks, whether the session exists or is already closed!
-     * @param statement string of a cassandra statement to execute
+     * @param query string of a cassandra statement to execute
      * @return the {@linkplain ResultSet} object
      */
-    public ResultSet executeStatement(String statement) {
+    public ResultSet executeStatement(String query, ConsistencyLevel consistency) {
+        SimpleStatement statement = SimpleStatement.newInstance(query).setConsistencyLevel(consistency);
         return session.execute(statement);
     }
 

@@ -1,5 +1,6 @@
 package de.evoila.cf.broker.custom.cassandra;
 
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import de.evoila.cf.broker.bean.ExistingEndpointBean;
 import de.evoila.cf.broker.model.Platform;
 import de.evoila.cf.broker.model.ServiceInstance;
@@ -30,7 +31,7 @@ public class CassandraCustomImplementation {
     public void createDatabase(CassandraDbService cassandraDbService, String database) {
         String createStatement = "CREATE KEYSPACE " + database + " WITH " +
                 "replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };";
-        cassandraDbService.executeStatement(createStatement);
+        cassandraDbService.executeStatement(createStatement, ConsistencyLevel.LOCAL_QUORUM);
         this.createRoleAndPermissions(cassandraDbService, database);
         // sleep to allow for the propagation of new settings throughout the cluster
 //        try { Thread.sleep(5000); } catch(InterruptedException e){}
@@ -40,48 +41,46 @@ public class CassandraCustomImplementation {
     private void createRoleAndPermissions(CassandraDbService cassandraDbService, String database) {
 
         String roleAdminStatement = "CREATE ROLE IF NOT EXISTS " + database + "_admin;";
-        cassandraDbService.executeStatement(roleAdminStatement);
-        // sleep to allow for the propagation of new settings throughout the cluster
-//        try { Thread.sleep(5000); } catch(InterruptedException e){}
+        cassandraDbService.executeStatement(roleAdminStatement, ConsistencyLevel.LOCAL_QUORUM);
+
         String permissionAdminStatement = "GRANT ALL PERMISSIONS on KEYSPACE " + database + " TO " + database + "_admin;";
-        cassandraDbService.executeStatement(permissionAdminStatement);
+        cassandraDbService.executeStatement(permissionAdminStatement, ConsistencyLevel.LOCAL_QUORUM);
 
         String roleStatement = "CREATE ROLE IF NOT EXISTS " + database + "_user;";
-        cassandraDbService.executeStatement(roleStatement);
-        // sleep to allow for the propagation of new settings throughout the cluster
-//        try { Thread.sleep(5000); } catch(InterruptedException e){}
+        cassandraDbService.executeStatement(roleStatement, ConsistencyLevel.LOCAL_QUORUM);
+
         String permissionStatement = "GRANT ALL PERMISSIONS on KEYSPACE " + database + " TO " + database + "_user;";
-        cassandraDbService.executeStatement(permissionStatement);
+        cassandraDbService.executeStatement(permissionStatement, ConsistencyLevel.LOCAL_QUORUM);
     }
 
     public void deleteDatabase(CassandraDbService cassandraDbService, String database) {
         String cqlStatement = "DROP KEYSPACE IF EXISTS " + database + ";";
 
-        cassandraDbService.executeStatement(cqlStatement);
+        cassandraDbService.executeStatement(cqlStatement, ConsistencyLevel.ONE);
 
         this.dropRoles(cassandraDbService, database);
     }
 
     public void dropRoles(CassandraDbService cassandraDbService, String database) {
         String dropRoleAdminStatement = "DROP ROLE IF EXISTS \'" + database + "_admin\';";
-        cassandraDbService.executeStatement(dropRoleAdminStatement);
+        cassandraDbService.executeStatement(dropRoleAdminStatement, ConsistencyLevel.ONE);
 
         String dropRoleUserStatement = "DROP ROLE IF EXISTS \'" + database + "_user\';";
-        cassandraDbService.executeStatement(dropRoleUserStatement);
+        cassandraDbService.executeStatement(dropRoleUserStatement, ConsistencyLevel.ONE);
     }
 
     public void bindRoleToDatabase(CassandraDbService cassandraDbService, String username,
                                    String password, String database) {
         String cqlStatement = "CREATE ROLE " + username + " WITH LOGIN = true AND PASSWORD = '" + password + "';";
-        cassandraDbService.executeStatement(cqlStatement);
+        cassandraDbService.executeStatement(cqlStatement, ConsistencyLevel.LOCAL_QUORUM);
 
         String roleBinding = "GRANT " + database + "_user TO " + username + ";";
-        cassandraDbService.executeStatement(roleBinding);
+        cassandraDbService.executeStatement(roleBinding, ConsistencyLevel.LOCAL_QUORUM);
     }
 
     public void unbindRoleFromDatabase(CassandraDbService cassandraDbService, String username) {
         String cqlStatement = "DROP ROLE IF EXISTS " + username + ";";
-        cassandraDbService.executeStatement(cqlStatement);
+        cassandraDbService.executeStatement(cqlStatement, ConsistencyLevel.ONE);
     }
 
     public CassandraDbService connection(ServiceInstance serviceInstance, Plan plan, UsernamePasswordCredential usernamePasswordCredential) {

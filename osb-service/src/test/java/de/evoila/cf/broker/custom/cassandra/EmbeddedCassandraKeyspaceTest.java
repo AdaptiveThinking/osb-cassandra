@@ -1,5 +1,6 @@
 package de.evoila.cf.broker.custom.cassandra;
 
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class EmbeddedCassandraKeyspaceTest extends EmbeddedCassandraTestBase {
     public void keyspaceTest() {
         // Test keyspace creation
         cassandraImplementation.createDatabase(cassandraDbService, "test_keyspace");
-        ResultSet resultSet = cassandraDbService.executeStatement("SELECT * from system_schema.keyspaces;");
+        ResultSet resultSet = cassandraDbService.executeStatement("SELECT * from system_schema.keyspaces;", ConsistencyLevel.LOCAL_QUORUM);
 
         Optional<Row> row = StreamSupport.stream(resultSet.spliterator(), false)
                 .filter(r -> r.getString("keyspace_name").equals("test_keyspace"))
@@ -49,7 +50,7 @@ public class EmbeddedCassandraKeyspaceTest extends EmbeddedCassandraTestBase {
 
         // Test keyspace deletion
         cassandraImplementation.deleteDatabase(cassandraDbService, KEYSPACE_NAME);
-        resultSet = cassandraDbService.executeStatement("SELECT * from system_schema.keyspaces;");
+        resultSet = cassandraDbService.executeStatement("SELECT * from system_schema.keyspaces;", ConsistencyLevel.LOCAL_QUORUM);
 
         row = StreamSupport.stream(resultSet.spliterator(), false)
                 .filter(r -> r.getString("keyspace_name").equals("test_keyspace"))
@@ -91,7 +92,7 @@ public class EmbeddedCassandraKeyspaceTest extends EmbeddedCassandraTestBase {
      * @return a ResultSet with the answer of cassandra
      */
     private ResultSet getUser(String username) {
-        return cassandraDbService.executeStatement("SELECT * FROM system_auth.roles WHERE role = \'"+username+"\';");
+        return cassandraDbService.executeStatement("SELECT * FROM system_auth.roles WHERE role = \'"+username+"\';", ConsistencyLevel.LOCAL_QUORUM);
     }
 
     /**
@@ -128,6 +129,6 @@ public class EmbeddedCassandraKeyspaceTest extends EmbeddedCassandraTestBase {
      * @return a ResultSet with the answer of cassandra
      */
     private ResultSet getPermissionsOfUser(String username) {
-        return cassandraDbService.executeStatement("SELECT * FROM system_auth.role_permissions WHERE role = \'" + username + "\';");
+        return cassandraDbService.executeStatement("SELECT * FROM system_auth.role_permissions WHERE role = \'" + username + "\';", ConsistencyLevel.LOCAL_QUORUM);
     }
 }
