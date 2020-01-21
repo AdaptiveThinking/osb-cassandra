@@ -8,6 +8,7 @@ import de.evoila.cf.broker.repository.PlatformRepository;
 import de.evoila.cf.broker.service.CatalogService;
 import de.evoila.cf.broker.service.availability.ServicePortAvailabilityVerifier;
 import de.evoila.cf.security.credentials.CredentialStore;
+import de.evoila.cf.security.credentials.DefaultCredentialConstants;
 import io.bosh.client.deployments.Deployment;
 import io.bosh.client.errands.ErrandSummary;
 import io.bosh.client.vms.Vm;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Johannes Hiemer.
+ * @author Johannes Hiemer, Johannes Strauß.
  */
 @Service
 @ConditionalOnBean(BoshProperties.class)
@@ -57,6 +58,10 @@ public class CassandraBoshPlatformService extends BoshPlatformService {
     @Override
     public void postDeleteInstance(ServiceInstance serviceInstance) {
         credentialStore.deleteCredentials(serviceInstance.getId(), CredentialConstants.SERVICE_CREDENTIALS);
+        credentialStore.deleteCredentials(serviceInstance.getId(), CredentialConstants.USER_CREDENTIALS);
+        credentialStore.deleteCredentials(serviceInstance.getId(), DefaultCredentialConstants.BACKUP_AGENT_CREDENTIALS);
+        credentialStore.deleteCredentials(serviceInstance.getId(), DefaultCredentialConstants.BACKUP_CREDENTIALS);
+        credentialStore.deleteCredentials(serviceInstance.getId(), DefaultCredentialConstants.EXPORTER_CREDENTIALS);
     }
 
 }
