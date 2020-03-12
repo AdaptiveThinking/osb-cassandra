@@ -22,14 +22,14 @@ import java.util.List;
  * It starts the embedded cassandra instance before all tests cases.
  * It provides a creation of a connection to cassandra before a test case
  * and cleanup of created keyspaces and the session after a test case.
- * Additionally reoccuring variables are stored as constants, such as {@linkplain #USERNAME}, {@linkplain #DATACENTER} and more.
+ * Additionally reoccuring variables are stored as constants, such as {@linkplain #ADMIN_USERNAME}, {@linkplain #DATACENTER} and more.
  */
 public class EmbeddedCassandraTestBase {
 
     private static final Logger log = LoggerFactory.getLogger(EmbeddedCassandraTestBase.class);
 
-    public static final String USERNAME = "cassandra";
-    public static final String PASSWORD = "cassandra";
+    public static final String ADMIN_USERNAME = "cassandra";
+    public static final String ADMIN_PASSWORD = "cassandra";
     public static final String DATACENTER = "datacenter1";
     public static final String DEFAULT_KEYSPACE = "system";
 
@@ -47,7 +47,7 @@ public class EmbeddedCassandraTestBase {
 
     @Before
     public void prepareConnection() {
-        prepareConnection(DEFAULT_KEYSPACE, USERNAME, PASSWORD);
+        prepareConnection(DEFAULT_KEYSPACE, ADMIN_USERNAME, ADMIN_PASSWORD);
     }
 
     public void prepareConnection(String database, String username, String password) {
@@ -69,7 +69,7 @@ public class EmbeddedCassandraTestBase {
         clusterName = EmbeddedCassandraServerHelper.getClusterName();
 
         // Wait for cluster to be started completely, including the superuser to be created
-        try { Thread.sleep(20000); } catch(InterruptedException e){}
+       // try { Thread.sleep(20000); } catch(InterruptedException e){}
         log.info("Created embedded cassandra under \"" + clusterName + "\" - " + ip + ":"+port);
 
         cassandraDbService = new CassandraDbService();

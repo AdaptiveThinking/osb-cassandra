@@ -84,10 +84,12 @@ public class EmbeddedCassandraBindingFunctionsTest extends EmbeddedCassandraTest
         cassandraDbService.executeStatement("DROP TABLE "+KEYSPACE_NAME+"."+TEST_TABLE+";", ConsistencyLevel.LOCAL_QUORUM);
         resultSet = cassandraDbService.executeStatement(SELECT_TEST_KEYSPACE, ConsistencyLevel.LOCAL_QUORUM);
         assertFalse("Table should not exist after dropping it, but it does.", resultSet.iterator().hasNext());
+        cassandraDbService.closeConnection();
     }
 
     @After
     public void removeRoleAndKeyspace() {
+        prepareConnection(DEFAULT_KEYSPACE, ADMIN_USERNAME, ADMIN_PASSWORD);
         cassandraImplementation.unbindRoleFromDatabase(cassandraDbService, TEST_USER_NAME);
         cassandraImplementation.deleteDatabase(cassandraDbService, KEYSPACE_NAME);
     }
