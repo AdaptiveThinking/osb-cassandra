@@ -14,7 +14,7 @@ import org.springframework.util.Assert;
  * @author Johannes Hiemer.
  */
 @RefreshScope
-@SpringBootApplication(exclude = { RabbitAutoConfiguration.class, BusAutoConfiguration.class })
+@SpringBootApplication
 public class Application {
 
     public static void main(String[] args) {
