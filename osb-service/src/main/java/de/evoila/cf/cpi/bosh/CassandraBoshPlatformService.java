@@ -41,11 +41,17 @@ public class CassandraBoshPlatformService extends BoshPlatformService {
         this.credentialStore = credentialStore;
     }
 
-    public void runCreateErrands(ServiceInstance instance, Plan plan, Deployment deployment, Observable<List<ErrandSummary>> errands) {}
+    public void runCreateErrands(ServiceInstance instance, Plan plan, Deployment deployment, Observable<List<ErrandSummary>> errands) {
+        log.debug("This method has not been implemented!");
+    }
 
-    protected void runUpdateErrands(ServiceInstance instance, Plan plan, Deployment deployment, Observable<List<ErrandSummary>> errands) {}
+    protected void runUpdateErrands(ServiceInstance instance, Plan plan, Deployment deployment, Observable<List<ErrandSummary>> errands) {
+        log.debug("This method has not been implemented!");
+    }
 
-    protected void runDeleteErrands(ServiceInstance instance, Deployment deployment, Observable<List<ErrandSummary>> errands) {}
+    protected void runDeleteErrands(ServiceInstance instance, Deployment deployment, Observable<List<ErrandSummary>> errands) {
+        log.debug("This method has not been implemented!");
+    }
 
     @Override
     protected void updateHosts(ServiceInstance serviceInstance, Plan plan, Deployment deployment) {
